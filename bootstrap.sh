@@ -2,6 +2,8 @@
 
 sed -i 's/^mesg n$/tty -s \&\& mesg n/g' /root/.profile
 sed -i '/^#.*force_color_prompt=yes/s/^#//' ./.bashrc
+echo "ServerName localhost" > /etc/apache2/httpd.conf
+mkdir -p /var/www/html
 echo "cd /var/www/html/" >> ./.bashrc
 
 printf "%$(tput cols)s\n"|tr " " "="
@@ -17,6 +19,25 @@ apt-get install -y php5
 apt-get install -y php5-xdebug
 
 
+
+# Setup hosts file
+VHOST=$(cat <<EOF
+<VirtualHost *:80>
+  DocumentRoot "/vagrant/Sites/default"
+  ServerName localhost
+  <Directory "/vagrant/Sites/default">
+    AllowOverride All
+    Require all granted
+  </Directory>
+</VirtualHost>
+EOF
+)
+echo "${VHOST}" > /etc/apache2/sites-enabled/000-default
+# Enable mod_rewrite
+a2enmod rewrite
+# Restart apache
+service apache2 restart
+
 printf "%$(tput cols)s\n"|tr " " "="
 echo "Installing MySql"
 printf "%$(tput cols)s\n"|tr " " "="
@@ -27,12 +48,12 @@ sudo apt-get -y install mysql-server libapache2-mod-auth-mysql php5-mysql
 
 printf "%$(tput cols)s\n"|tr " " "="
 echo "Configuring Apache for Vagrant"
-printf "%$(tput cols)s\n"|tr " " "="
-if ! [ -L /var/www ]; then
-  rm -rf /var/www/*
-  ln -fs /vagrant /var/www/html
-fi
-sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+#printf "%$(tput cols)s\n"|tr " " "="
+#if ! [ -L /var/www ]; then
+#  rm -rf /var/www/*
+#  ln -fs /vagrant /var/www/html
+#fi
+#sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 a2enmod rewrite
 #Configuring XDebug
 echo "zend_extension=xdebug.so">/etc/php5/mods-available/xdebug.ini
@@ -45,7 +66,7 @@ printf "%$(tput cols)s\n"|tr " " "="
 echo "Installing Git and dev tools"
 printf "%$(tput cols)s\n"|tr " " "="
 apt-get install -y git
-
+apt-get install -y vim 
 printf "%$(tput cols)s\n"|tr " " "="
 echo "Provisioning completed"
 printf "%$(tput cols)s\n"|tr " " "="
