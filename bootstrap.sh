@@ -2,7 +2,7 @@
 
 sed -i 's/^mesg n$/tty -s \&\& mesg n/g' /root/.profile
 sed -i '/^#.*force_color_prompt=yes/s/^#//' ./.bashrc
-echo "ServerName localhost" > /etc/apache2/httpd.conf
+#echo "ServerName localhost" > /etc/apache2/httpd.conf
 mkdir -p /var/www/html
 echo "cd /var/www/html/" >> ./.bashrc
 
@@ -15,10 +15,10 @@ printf "%$(tput cols)s\n"|tr " " "="
 echo "Installing Apache and its modules"
 printf "%$(tput cols)s\n"|tr " " "="
 apt-get install -y apache2
-apt-get install -y php5
-apt-get install -y php5-xdebug
+#apt-get install -y php5
+#apt-get install -y php5-xdebug
 
-
+echo "ServerName localhost" > /etc/apache2/httpd.conf
 
 # Setup hosts file
 VHOST=$(cat <<EOF
@@ -56,9 +56,9 @@ echo "Configuring Apache for Vagrant"
 #sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 a2enmod rewrite
 #Configuring XDebug
-echo "zend_extension=xdebug.so">/etc/php5/mods-available/xdebug.ini
-echo "xdebug.remote_enable = on">>/etc/php5/mods-available/xdebug.ini
-echo "xdebug.remote_connect_back = on">>/etc/php5/mods-available/xdebug.ini
+#echo "zend_extension=xdebug.so">/etc/php5/mods-available/xdebug.ini
+#echo "xdebug.remote_enable = on">>/etc/php5/mods-available/xdebug.ini
+#echo "xdebug.remote_connect_back = on">>/etc/php5/mods-available/xdebug.ini
 
 service apache2 restart
 
